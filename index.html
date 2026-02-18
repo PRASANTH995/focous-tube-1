@@ -9,6 +9,8 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -59,11 +61,10 @@
       filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.4));
     }
     
-    /* RESPONSIVE PLAYER CONTAINER (Fixes Mobile) */
+    /* RESPONSIVE PLAYER CONTAINER */
     #player-container {
       width: 100%;
       max-width: 1200px;
-      /* Remove fixed height, use aspect ratio for mobile responsiveness */
       aspect-ratio: 16 / 9; 
       height: auto;
       background: #000;
@@ -97,7 +98,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.5s ease;
-      width: 80%; /* Prevent overflow on small screens */
+      width: 80%;
       text-align: center;
     }
     #video-status.show { opacity: 1; }
@@ -117,7 +118,7 @@
     }
     
     /* Hide unwanted elements */
-    .study-float { display: none; } /* Hide floating emojis on mobile to save space */
+    .study-float { display: none; }
     @media (min-width: 768px) {
       .study-float { display: block; position: absolute; opacity: 0.1; pointer-events: none; animation: floatStudy 6s ease-in-out infinite; }
     }
@@ -164,7 +165,7 @@
                 placeholder="✏️ Type your notes here..."></textarea>
       <div class="flex justify-center mt-4">
         <button id="saveNotes" class="px-6 py-3 glow-button-blue text-white font-bold rounded-lg text-lg">
-          💾 Save Notes
+          💾 Save as PDF
         </button>
       </div>
     </section>
@@ -202,19 +203,13 @@
       if (currentId) sessionStorage.setItem('notes_' + currentId, notesA.value);
       currentId = vid;
 
-      // --- FIX FOR ERROR 153 & MOBILE START ---
       const iframe = document.createElement('iframe');
       
-      // 1. Standard Embed URL (No Origin Param - FIXES ERROR 153)
+      // FIXES for Azure/Mobile
       iframe.src = `https://www.youtube.com/embed/${vid}?controls=1&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3`;
-      
-      // 2. Strict Referrer Policy (Crucial for Azure/Mobile)
       iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
-      
-      // 3. Permissions
       iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
       iframe.allowFullscreen = true;
-      // --- FIX END ---
 
       pc.innerHTML = '';
       const newStatusDiv = document.createElement('div');
@@ -238,19 +233,44 @@
       notesA.value = sessionStorage.getItem('notes_' + vid) || '';
     }
 
+    // --- NEW PDF SAVE FUNCTION ---
     function saveNotes() {
       if (!currentId) return;
+      
+      // Save to local storage first
       sessionStorage.setItem('notes_' + currentId, notesA.value);
       
-      const filename = `FocusTube_Notes_${currentId}.txt`;
-      const blob = new Blob([notesA.value], { type: 'text/plain' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      showStatus('💾 Notes Saved!');
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // 1. Title
+      doc.setFontSize(18);
+      doc.setTextColor(40);
+      doc.text("FocusTube+ Study Notes", 10, 15);
+      
+      // 2. Metadata (Date)
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      const dateStr = new Date().toLocaleString();
+      doc.text(`Created: ${dateStr}`, 10, 22);
+      
+      // 3. Line separator
+      doc.setDrawColor(200);
+      doc.line(10, 25, 200, 25);
+      
+      // 4. The Notes content
+      doc.setFontSize(12);
+      doc.setTextColor(0);
+      
+      // This splits the long text so it fits the PDF width (A4 width is 210mm)
+      const textLines = doc.splitTextToSize(notesA.value, 190);
+      doc.text(textLines, 10, 35);
+      
+      // 5. Save the file
+      const filename = `FocusTube_Notes_${currentId}.pdf`;
+      doc.save(filename);
+      
+      showStatus('💾 PDF Saved Successfully!');
     }
 
     loadBtn.addEventListener('click', loadVideo);
