@@ -3,8 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  
   <title>FocusTube+ 📚✨</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
+  
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -123,7 +127,7 @@
       width: 100%;
       height: 100%;
       border: 0;
-      position: absolute; /* Ensure iframe sits behind status */
+      position: absolute;
       top: 0;
       left: 0;
       z-index: 1;
@@ -319,22 +323,26 @@
 
       const iframe = document.createElement('iframe');
       
-      // FIX: Use window.location.origin to fix configuration errors
+      // FIX 2: Explicitly get the origin for the iframe config
       const origin = window.location.origin;
       
-      // FIX: Switched to standard youtube.com domain
+      // FIX 3: Add the strict referrer policy attribute directly to iframe
+      iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+      
+      // FIX 4: Update SRC with origin AND widget_referrer
       iframe.src = `https://www.youtube.com/embed/${vid}`
                  + `?controls=1&rel=0&modestbranding=1`
                  + `&cc_load_policy=1&iv_load_policy=3&playsinline=1`
-                 + `&origin=${origin}`; // Crucial for preventing Error 153
+                 + `&origin=${origin}`
+                 + `&widget_referrer=${origin}`;
                  
       iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
       iframe.allowFullscreen = true;
-
+      
       // Clear previous content
       pc.innerHTML = '';
       
-      // Re-add the status overlay div (it gets wiped by innerHTML = '')
+      // Re-add the status overlay div
       const newStatusDiv = document.createElement('div');
       newStatusDiv.id = 'video-status';
       pc.appendChild(newStatusDiv);
@@ -369,7 +377,6 @@
       // Try to get title, fallback to ID if blocked by cross-origin
       let title = currentId;
       try {
-        // This often fails due to CORS, but we keep it just in case
         title = document.querySelector('#player-container iframe').title || currentId;
       } catch {}
       
