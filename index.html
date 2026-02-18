@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>FocusTube+ 📚✨</title>
-  <!-- Tailwind for utility classes -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
@@ -124,6 +123,10 @@
       width: 100%;
       height: 100%;
       border: 0;
+      position: absolute; /* Ensure iframe sits behind status */
+      top: 0;
+      left: 0;
+      z-index: 1;
     }
     
     /* Centered status message over video */
@@ -217,12 +220,10 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
-  <!-- Om Namah Shivaya in Telugu - AT THE VERY TOP -->
   <div class="w-full text-center py-2">
     <h1 class="text-lg font-medium om-namah-shivaya"> 🕉 నమః శివాయ 🙏 </h1>
   </div>
 
-  <!-- Floating study elements -->
   <div class="study-float" style="top: 15%; left: 5%; font-size: 3rem;">🎓</div>
   <div class="study-float" style="top: 25%; right: 5%; font-size: 2.5rem; animation-delay: -2s;">📚</div>
   <div class="study-float" style="top: 65%; left: 3%; font-size: 2rem; animation-delay: -4s;">💡</div>
@@ -231,7 +232,6 @@
   <div class="study-float" style="top: 35%; right: 3%; font-size: 2.5rem; animation-delay: -5s;">🏆</div>
 
   <div class="w-full relative z-10 px-4">
-    <!-- Main header with FocusTube+ smooth purple glow -->
     <header class="text-center mb-6 mt-6">
       <h1 class="text-6xl font-bold focus-tube-glow mb-2" onclick="scrollToTop()">✨ FocusTube+ ✨</h1>
       <p class="text-xl colorful-subtitle mb-2">🎯 Study without distractions</p>
@@ -247,15 +247,12 @@
       </button>
     </div>
     
-    <!-- Regular status message -->
     <div id="status" class="h-6 text-center text-lg font-semibold mb-4 max-w-3xl mx-auto"></div>
 
-    <!-- Video container with centered status overlay -->
     <div id="player-container" class="hidden mb-6">
       <div id="video-status"></div>
     </div>
 
-    <!-- Notes section with normal text matching environment -->
     <section id="notes" class="hidden max-w-3xl mx-auto w-full mt-12">
       <h2 class="text-3xl font-bold mb-3 text-center mt-8">
         <span class="normal-notes-text">📝 My Study Notes 📝</span>
@@ -278,7 +275,6 @@
     const loadBtn  = document.getElementById('loadBtn');
     const status   = document.getElementById('status');
     const pc       = document.getElementById('player-container');
-    const videoStatus = document.getElementById('video-status');
     const notesSec = document.getElementById('notes');
     const notesA   = document.getElementById('notesArea');
     const saveBtn  = document.getElementById('saveNotes');
@@ -308,49 +304,76 @@
 
     function loadVideo() {
       const vid = extractID(urlInput.value.trim());
-      if (!vid) return showStatus('Invalid YouTube URL! Please check your link 🔗', true);
+      
+      if (!vid) {
+        return showStatus('Invalid YouTube URL! Please check your link 🔗', true);
+      }
+      
       showStatus('🎬 Loading your study video...');
 
+      // Save notes for previous video before switching
       if (currentId) {
         sessionStorage.setItem('notes_' + currentId, notesA.value);
       }
       currentId = vid;
 
       const iframe = document.createElement('iframe');
-      iframe.src = `https://www.youtube-nocookie.com/embed/${vid}`
+      
+      // FIX: Use window.location.origin to fix configuration errors
+      const origin = window.location.origin;
+      
+      // FIX: Switched to standard youtube.com domain
+      iframe.src = `https://www.youtube.com/embed/${vid}`
                  + `?controls=1&rel=0&modestbranding=1`
-                 + `&cc_load_policy=1&iv_load_policy=3&playsinline=1`;
+                 + `&cc_load_policy=1&iv_load_policy=3&playsinline=1`
+                 + `&origin=${origin}`; // Crucial for preventing Error 153
+                 
       iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
       iframe.allowFullscreen = true;
 
-      pc.innerHTML = '<div id="video-status"></div>';
+      // Clear previous content
+      pc.innerHTML = '';
+      
+      // Re-add the status overlay div (it gets wiped by innerHTML = '')
+      const newStatusDiv = document.createElement('div');
+      newStatusDiv.id = 'video-status';
+      pc.appendChild(newStatusDiv);
       pc.appendChild(iframe);
+      
       pc.classList.remove('hidden');
       notesSec.classList.remove('hidden');
 
-      const newVideoStatus = document.getElementById('video-status');
       status.innerHTML = '';
       
+      // Show the "Video Loaded" overlay
       setTimeout(() => {
-        newVideoStatus.innerHTML = '✅ 🎉 Video loaded! Happy studying! 📚✨';
-        newVideoStatus.classList.add('show');
-        
-        setTimeout(() => {
-          newVideoStatus.classList.remove('show');
-        }, 3000);
+        const statusOverlay = document.getElementById('video-status');
+        if(statusOverlay) {
+            statusOverlay.innerHTML = '✅ 🎉 Video loaded! Happy studying! 📚✨';
+            statusOverlay.classList.add('show');
+            
+            setTimeout(() => {
+              statusOverlay.classList.remove('show');
+            }, 3000);
+        }
       }, 1000);
 
+      // Load saved notes for this specific video
       notesA.value = sessionStorage.getItem('notes_' + vid) || '';
     }
 
     function saveNotes() {
       if (!currentId) return;
       sessionStorage.setItem('notes_' + currentId, notesA.value);
+      
+      // Try to get title, fallback to ID if blocked by cross-origin
       let title = currentId;
       try {
-        title = document.querySelector('#player-container iframe').title;
+        // This often fails due to CORS, but we keep it just in case
+        title = document.querySelector('#player-container iframe').title || currentId;
       } catch {}
-      const filename = title.replace(/[<>:"/\\|?*]/g, '_') + '_study_notes.txt';
+      
+      const filename = 'FocusTube_' + title.replace(/[<>:"/\\|?*]/g, '_') + '_notes.txt';
       const blob = new Blob([notesA.value], { type: 'text/plain' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -362,8 +385,13 @@
       showStatus('💾 Notes saved successfully! Keep learning! 🌟');
     }
 
+    // Event Listeners
     loadBtn.addEventListener('click', loadVideo);
-    urlInput.addEventListener('keypress', e => e.key === 'Enter' && loadVideo());
+    
+    urlInput.addEventListener('keypress', e => {
+        if (e.key === 'Enter') loadVideo();
+    });
+    
     saveBtn.addEventListener('click', saveNotes);
   </script>
 </body>
