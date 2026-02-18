@@ -74,9 +74,9 @@
       filter: drop-shadow(0 0 15px rgba(129, 140, 248, 0.3));
     }
     
-    /* Responsive Player */
+    /* Responsive Player - FIXED ALIGNMENT */
     #player-container {
-      width: 100%;
+      width: 80%; /* UPDATED: Container now controls the size */
       max-width: 100%; 
       aspect-ratio: 16 / 9; 
       background: #000;
@@ -85,17 +85,17 @@
       margin: 0 auto;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      position: relative; /* Crucial for absolute positioning of status */
+      position: relative; 
     }
     
     #player-container iframe {
-      width: 80%;
-      height: 80%;
+      width: 100%; /* UPDATED: Fills the container perfectly */
+      height: 100%; /* UPDATED: Fills the container perfectly */
       border: 0;
       display: block;
       position: absolute;
       top: 0; left: 0;
-      z-index: 1; /* Iframe sits at level 1 */
+      z-index: 1; 
     }
     
     /* Modern Inputs */
@@ -157,7 +157,7 @@
       font-weight: 500;
       letter-spacing: 0.5px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      z-index: 50; /* Ensure this is ABOVE the iframe */
+      z-index: 50; 
     }
     #video-status.show { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
 
@@ -233,10 +233,8 @@
 
     function extractID(url) {
       if (!url) return null;
-      // Robust Regex for various YouTube formats
       const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
       const match = url.match(regExp);
-      // More permissive check (just needs to exist and be reasonable length)
       return (match && match[2] && match[2].length === 11) ? match[2] : null;
     }
 
@@ -251,29 +249,23 @@
       
       showStatus('Loading video...');
 
-      // Save previous notes if they exist
       if (currentId) sessionStorage.setItem('notes_' + currentId, notesA.value);
       currentId = vid;
 
       const iframe = document.createElement('iframe');
-      // Added more permissions for stability
       iframe.src = `https://www.youtube.com/embed/${vid}?controls=1&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3`;
       iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
       iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
       iframe.allowFullscreen = true;
 
-      // DOM Manipulation Logic
-      pc.innerHTML = ''; // Clear existing
+      pc.innerHTML = ''; 
       
-      // Re-create Status Div
       const newStatusDiv = document.createElement('div');
       newStatusDiv.id = 'video-status';
       
-      // Append order: iframe first, then status (though z-index in CSS handles the real stacking)
       pc.appendChild(iframe);
       pc.appendChild(newStatusDiv);
       
-      // Animations
       pc.classList.remove('hidden');
       notesSec.classList.remove('hidden');
       
@@ -284,7 +276,6 @@
 
       status.innerHTML = '';
       
-      // Trigger Status Overlay
       setTimeout(() => {
         const overlay = document.getElementById('video-status');
         if(overlay) {
@@ -294,7 +285,6 @@
         }
       }, 1000);
 
-      // Load saved notes
       notesA.value = sessionStorage.getItem('notes_' + vid) || '';
     }
 
@@ -305,7 +295,6 @@
         return;
       }
       
-      // Fallback ID if no video is loaded but user wants to save notes
       const saveId = currentId || 'General_Notes';
       
       if (!window.jspdf) {
@@ -316,7 +305,6 @@
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
       
-      // PDF Styling
       doc.setFillColor(245, 245, 250);
       doc.rect(0, 0, 210, 297, 'F'); 
       
@@ -339,12 +327,9 @@
       doc.setFontSize(12);
       doc.setTextColor(30, 30, 30);
       
-      // Wrap text
       const textLines = doc.splitTextToSize(notesA.value, 170);
       
-      // Basic Pagination Check (prevents text flowing off page)
       let verticalOffset = 50;
-      // Limit to one page for this simple version, or slice array if needed
       doc.text(textLines, 20, verticalOffset);
       
       const filename = `FocusTube_${saveId}.pdf`;
@@ -360,4 +345,3 @@
   </script>
 </body>
 </html>
-
