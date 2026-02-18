@@ -15,15 +15,15 @@
   <style>
     /* Modern Scrollbar */
     ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #0f0f1a; }
-    ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
     body {
       font-family: 'Inter', sans-serif;
-      /* Deeper, richer background gradient */
-      background: radial-gradient(circle at top right, #2d1b4e 0%, #0f0f1a 40%, #000000 100%);
-      color: #e0e7ff;
+      /* CHANGED: Deep Slate / Zen Night Gradient - Soothing for eyes */
+      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 60%, #020617 100%);
+      color: #cbd5e1; /* Softer text color (Slate-300) */
       position: relative;
       overflow-x: hidden;
       min-height: 100vh;
@@ -38,11 +38,11 @@
       width: 150%;
       height: 150%;
       font-size: 30px;
-      opacity: 0.03;
-      animation: float 25s infinite linear;
+      opacity: 0.015; /* CHANGED: Reduced opacity for less distraction */
+      animation: float 45s infinite linear; /* CHANGED: Slower animation */
       z-index: -1;
       pointer-events: none;
-      filter: blur(2px);
+      filter: blur(3px); /* CHANGED: More blur for softness */
       line-height: 150px;
       letter-spacing: 100px;
     }
@@ -54,43 +54,43 @@
     
     /* Glassmorphism Container */
     .glass-panel {
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+      background: rgba(30, 41, 59, 0.4); /* Darker, blue-tinted glass */
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
     }
 
     /* Om Namah Shivaya Glow */
     .om-text {
-      background: linear-gradient(90deg, #fbbf24, #f59e0b);
+      background: linear-gradient(90deg, #fbbf24, #d97706);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+      text-shadow: 0 0 20px rgba(251, 191, 36, 0.15);
       font-weight: 600;
       letter-spacing: 1px;
     }
     
     /* Main Title Gradient */
     .focus-title {
-      background: linear-gradient(135deg, #c084fc 0%, #818cf8 50%, #2dd4bf 100%);
+      /* CHANGED: Calmer Teal/Blue Gradient */
+      background: linear-gradient(135deg, #5eead4 0%, #93c5fd 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 15px rgba(129, 140, 248, 0.3));
+      filter: drop-shadow(0 0 15px rgba(94, 234, 212, 0.2));
     }
     
     /* Responsive Player */
     #player-container {
       width: 100%;
-      /* Changed from 1100px to 100% to fill the new wider parent container */
-      max-width: 80%; 
+      max-width: 100%; 
       aspect-ratio: 16 / 9; 
       background: #000;
       border-radius: 1rem;
       overflow: hidden;
       margin: 0 auto;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
       position: relative;
     }
     
@@ -104,27 +104,27 @@
     /* Modern Inputs */
     .glass-input {
       background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
       transition: all 0.3s ease;
     }
     .glass-input:focus {
-      background: rgba(15, 23, 42, 0.9);
-      border-color: #818cf8;
-      box-shadow: 0 0 20px rgba(129, 140, 248, 0.2);
+      background: rgba(30, 41, 59, 0.8);
+      border-color: #5eead4; /* Teal focus */
+      box-shadow: 0 0 20px rgba(94, 234, 212, 0.1);
     }
     
     /* Modern Buttons */
     .modern-btn {
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); /* Calmer Blue */
       position: relative;
       overflow: hidden;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
     }
     .modern-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
       filter: brightness(1.1);
     }
     .modern-btn:active {
@@ -132,11 +132,11 @@
     }
 
     .download-btn {
-      background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+      background: linear-gradient(135deg, #14b8a6 0%, #0ea5e9 100%); /* Teal/Sky */
+      box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
     }
     .download-btn:hover {
-      box-shadow: 0 8px 25px rgba(6, 182, 212, 0.6);
+      box-shadow: 0 8px 25px rgba(20, 184, 166, 0.5);
     }
 
     /* Status Overlay */
@@ -144,12 +144,12 @@
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(15, 23, 42, 0.9);
       backdrop-filter: blur(8px);
       padding: 1rem 2rem;
       border-radius: 50px;
-      border: 1px solid rgba(74, 222, 128, 0.5);
-      color: #4ade80;
+      border: 1px solid rgba(94, 234, 212, 0.3);
+      color: #5eead4;
       opacity: 0;
       pointer-events: none;
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -175,7 +175,7 @@
       <h1 class="text-5xl md:text-7xl font-bold focus-title mb-4 tracking-tight cursor-pointer" onclick="scrollToTop()">
         FocusTube+
       </h1>
-      <p class="text-lg md:text-xl text-gray-400 font-light">
+      <p class="text-lg md:text-xl text-slate-400 font-light">
         Distraction-free learning environment 🎯
       </p>
     </header>
@@ -183,7 +183,7 @@
     <div class="glass-panel p-2 rounded-2xl flex flex-col md:flex-row gap-2 shadow-2xl max-w-4xl mx-auto w-full">
       <input id="url" type="text"
              placeholder="🔗 Paste YouTube URL here..." 
-             class="w-full px-6 py-4 rounded-xl glass-input text-lg outline-none placeholder-gray-500"/>
+             class="w-full px-6 py-4 rounded-xl glass-input text-lg outline-none placeholder-slate-500"/>
       <button id="loadBtn" class="w-full md:w-auto px-8 py-4 rounded-xl modern-btn text-white font-bold text-lg whitespace-nowrap flex items-center justify-center gap-2">
         <span>🚀</span> Load Video
       </button>
@@ -197,17 +197,17 @@
 
     <section id="notes" class="hidden opacity-0 transition-all duration-700 ease-in translate-y-10">
       <div class="glass-panel rounded-2xl p-6 md:p-8 relative overflow-hidden group">
-        <div class="absolute -top-10 -right-10 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl group-hover:bg-purple-500/30 transition-all duration-500"></div>
+        <div class="absolute -top-10 -right-10 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl group-hover:bg-teal-500/20 transition-all duration-500"></div>
         
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+          <h2 class="text-2xl font-bold text-slate-200 flex items-center gap-3">
             <span>📝</span> Study Notes
           </h2>
-          <span class="text-xs text-gray-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">Auto-saves locally</span>
+          <span class="text-xs text-slate-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">Auto-saves locally</span>
         </div>
         
         <textarea id="notesArea"
-                  class="w-full h-64 rounded-xl glass-input p-6 text-lg outline-none resize-none leading-relaxed text-gray-200"
+                  class="w-full h-64 rounded-xl glass-input p-6 text-lg outline-none resize-none leading-relaxed text-slate-200"
                   placeholder="Type your key insights here..."></textarea>
                   
         <div class="flex justify-end mt-6">
@@ -340,4 +340,3 @@
   </script>
 </body>
 </html>
-
